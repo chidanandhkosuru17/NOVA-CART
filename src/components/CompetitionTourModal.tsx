@@ -6,39 +6,44 @@ import {
   X,
   CheckCircle2,
   Sparkles,
+  ShoppingBag,
+  Store,
   LayoutDashboard,
-  Users,
-  PackageSearch,
   Truck,
-  Flame,
-  LifeBuoy,
   Cpu,
-  CalendarCheck2,
-  FileSpreadsheet,
+  RefreshCw,
+  RotateCcw,
 } from 'lucide-react';
 import { TabKey } from './Sidebar';
+
+export type UserEnvironment = 'customer' | 'retailer' | 'admin';
 
 interface CompetitionTourModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSwitchRole: (role: UserEnvironment) => void;
   onSelectTab: (tab: TabKey) => void;
+  onResetDemoData: () => void;
   onOpenReport: () => void;
 }
 
 interface TourStep {
   stepNumber: number;
-  tab: TabKey | 'report';
+  environment: UserEnvironment;
+  adminTab?: TabKey;
   title: string;
   category: string;
   headline: string;
   narrative: string;
-  judgeObservation: string;
+  actionInstruction: string;
 }
 
 export const CompetitionTourModal: React.FC<CompetitionTourModalProps> = ({
   isOpen,
   onClose,
+  onSwitchRole,
   onSelectTab,
+  onResetDemoData,
   onOpenReport,
 }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -48,238 +53,262 @@ export const CompetitionTourModal: React.FC<CompetitionTourModalProps> = ({
   const tourSteps: TourStep[] = [
     {
       stepNumber: 1,
-      tab: 'executive',
-      title: 'Executive Dashboard Diagnostics',
-      category: 'Module A',
-      headline: 'Gross Growth Masking Severe Operational Bleed',
+      environment: 'customer',
+      title: 'Customer Shopping Experience',
+      category: 'Step 1 of 10 • Customer Discovery',
+      headline: 'Hyperlocal Store Discovery in Hyderabad',
       narrative:
-        'NOVA CART has reached 120,000 registered users, 38,500 monthly orders, and ₹26.1 Lakh monthly revenue across 620 retailers in Bengaluru, Mumbai, and Delhi NCR. However, management must address deep underlying issues.',
-      judgeObservation:
-        'Notice the comparison cards: Repeat purchase dropped from 41% to 27%, cancellations doubled from 6% to 11%, and monthly marketing burn reached ₹17 Lakh with 44% unused vouchers.',
+        'Welcome to NOVA CART. Customers can discover neighborhood Kirana stores, pharmacies, bakeries, and dairies across Hyderabad (Madhapur, Kukatpally, Gachibowli, Kondapur, Miyapur).',
+      actionInstruction:
+        'Browse product categories, explore nearby stores, and examine delivery times and transparent pricing.',
     },
     {
       stepNumber: 2,
-      tab: 'executive',
-      title: 'Evidence-Based Diagnostic Trends',
-      category: 'Module A Charts',
-      headline: 'The Correlation of Churn, Late Deliveries & Support Surges',
+      environment: 'customer',
+      title: 'Place a Sample Grocery Order',
+      category: 'Step 2 of 10 • Connected Checkout',
+      headline: 'Instant Cart & Transparent Checkout',
       narrative:
-        'Late deliveries (>15 mins) climbed to 13% while average delivery rose from 29 to 37 minutes. This triggered a 90% explosion in monthly customer support tickets (3,100 to 5,900) and eroded repeat order propensity.',
-      judgeObservation:
-        'Switch between the charts above to see how Marketing Spend vs Revenue decoupled over the past 5 months.',
+        'When customers add essentials like Aashirvaad Atta and Amul Milk to cart, transparent fees are shown upfront before payment. Demo payment methods include UPI Demo, Cash on Delivery, and Card Demo.',
+      actionInstruction:
+        'Add an item to your cart and click "Proceed to Checkout" to generate a live demo order with simulated delivery tracking.',
     },
     {
       stepNumber: 3,
-      tab: 'customer_intelligence',
-      title: 'Customer Intelligence & 3-Streak Milestone',
-      category: 'Module B',
-      headline: 'Order #3 Yields a 72% Next-Month Retention Probability',
+      environment: 'retailer',
+      title: 'Switch to the Retailer Portal',
+      category: 'Step 3 of 10 • Local Merchant Ops',
+      headline: 'Balaji Provisions Store Fulfillment Console',
       narrative:
-        'Analyzing 120,000 users reveals that the critical failure point is right after Order 1—only 31% place a second order within 30 days. Customers acquired through heavy blanket discounts show minimal organic loyalty.',
-      judgeObservation:
-        'Click on "At-Risk Customers" or "Discount-Dependent Customers" in the table to view the tailor-made retention nudges and trigger a campaign.',
+        'Local merchants receive orders instantly in their dedicated portal without complex hardware. The retailer can monitor today’s sales, pending fulfillments, and toggle "Busy Store Mode".',
+      actionInstruction:
+        'Observe the real-time order synchronized directly from the customer shopping interface.',
     },
     {
       stepNumber: 4,
-      tab: 'inventory',
-      title: 'Smart Inventory & Kirana Sync',
-      category: 'Module C',
-      headline: 'Eliminating the Primary Driver of Avoidable Cancellations',
+      environment: 'retailer',
+      title: 'Accept and Prepare the Order',
+      category: 'Step 4 of 10 • Multi-Stage Fulfillment',
+      headline: 'Real-Time Preparation Status Pipeline',
       narrative:
-        'Retailers struggle with manual inventory logging. 62% of platform cancellations are caused by customers paying for items that local Kiranas and Pharmacies do not have in stock.',
-      judgeObservation:
-        'Notice the stock accuracy indicator (74%). Test clicking "- / +" to adjust inventory or click "Masked (Hidden)" to simulate real-time catalog protection.',
+        'Merchants advance orders through the 6 stages: "Order Placed" → "Retailer Accepted" → "Preparing Order" → "Ready for Pickup" → "Out for Delivery" → "Delivered".',
+      actionInstruction:
+        'Click "Accept Order" or "Start Prep" to watch customer-facing tracking update instantaneously.',
     },
     {
       stepNumber: 5,
-      tab: 'order_rescue',
-      title: 'Order Rescue & Delivery Operations',
-      category: 'Module D',
-      headline: 'Real-Time Heuristic Risk Detection & 1-Tap Interventions',
+      environment: 'customer',
+      title: 'Demonstrate an Inventory Mismatch',
+      category: 'Step 5 of 10 • Stockout Prevention',
+      headline: 'Catalog Protection & Stockout Warnings',
       narrative:
-        'The order risk engine flags bottlenecks transparently: unacknowledged store orders (>4 mins), rider pool shortages (>6 mins), and orders breaching the 35-minute delivery ceiling.',
-      judgeObservation:
-        'Inspect the orders at risk. Click "Execute 1-Tap Rescue" or "Send ₹50 Delay Credit" to see how the system stabilizes orders before customer cancellation.',
+        'In the demo dataset, Fresh Bananas is intentionally marked "Out of Stock" at Sri Krishna Dairy to demonstrate how NOVA CART prevents the #1 cause of quick-commerce cancellations.',
+      actionInstruction:
+        'Open the product detail for the out-of-stock item in the Customer App to view the availability guard.',
     },
     {
       stepNumber: 6,
-      tab: 'promotions',
-      title: 'Smart Promotions & Reallocation Simulator',
-      category: 'Module E',
-      headline: 'Reallocating ₹17 Lakh Burn from Wasteful Vouchers to Retention',
+      environment: 'customer',
+      title: 'Alternative-Store Recommendation',
+      category: 'Step 6 of 10 • AI Substitution Engine',
+      headline: 'Suggesting Nearby Stores with In-Stock Products',
       narrative:
-        'Instead of blanket 50% acquisition vouchers with 44% breakage, the model shifts capital into 3-Order Streak bonuses and merchant-co-funded neighborhood baskets.',
-      judgeObservation:
-        'Adjust the "Retention Share" slider from 42% to 65%+ in the simulator to see projected orders and marketing ROAS rise without extra capital burn.',
+        'Rather than silently dropping the order or forcing cancellation, NOVA CART automatically identifies an alternative neighborhood store (Balaji Supermarket) and asks the customer to approve the substitution.',
+      actionInstruction:
+        'Click "Accept Alternative Store & Add to Cart" to see the customer seamlessly recover the purchase.',
     },
     {
       stepNumber: 7,
-      tab: 'support',
-      title: 'Support Resolution & Instant UPI Refunds',
-      category: 'Module F',
-      headline: 'Cutting 9.2-Hour Ticket Latency to Sub-2-Hour Speed',
+      environment: 'admin',
+      adminTab: 'executive',
+      title: 'Admin Command Center Overview',
+      category: 'Step 7 of 10 • Executive Diagnostics',
+      headline: '120k Users, ₹26.1L Revenue & Operational Bleed',
       narrative:
-        'Support tickets jumped to 5,900/month. The root-cause audit identifies refunds and delays as 62% of complaints. Automating webhook refunds upon store rejection eliminates repetitive contacts.',
-      judgeObservation:
-        'Click "Quick Resolve" or add resolution notes to test live ticket resolution workflows.',
+        'Switch to the Admin Command Center. NOVA CART has scaled to 120,000 customers and ₹26.1L monthly revenue, but repeat rate has fallen to 27%, cancellations stand at 11%, and monthly marketing burn is ₹17L.',
+      actionInstruction:
+        'Review the baseline challenge KPI matrix and diagnostic trend charts comparing growth vs churn.',
     },
     {
       stepNumber: 8,
-      tab: 'simulator',
-      title: 'Central Business Rescue Simulator',
-      category: 'Module G',
-      headline: 'Testing the 6-Month Turnaround Under the ₹25 Lakh Cap',
+      environment: 'admin',
+      adminTab: 'order_rescue',
+      title: 'Order Rescue & Inventory Insights',
+      category: 'Step 8 of 10 • Operations Command',
+      headline: 'Heuristic Detection & Proactive Mitigation',
       narrative:
-        'The center of the platform allows management to simulate the exact impact of operational levers (Repeat Rate, Cancellation Rate, Delivery Time, Inventory Accuracy, AOV) on monthly orders and net revenue.',
-      judgeObservation:
-        'Click "Run Business Rescue Simulation" to observe transparent multi-variable projections and save scenarios to the database.',
+        'The Order Rescue Center catches orders at risk: delayed rider dispatches, merchant stockouts, and cancellations. Operational teams intervene with 1 tap.',
+      actionInstruction:
+        'Click "Mitigate" or view the incident log to inspect how delay notifications protect customer trust.',
     },
     {
       stepNumber: 9,
-      tab: 'action_plan',
-      title: 'Six-Month Roadmap & ₹25 Lakh Budget Planner',
-      category: 'Module H & Report',
-      headline: 'Disciplined Capital Allocation and Milestone Execution',
+      environment: 'admin',
+      adminTab: 'recommendations',
+      title: 'AI Business Copilot & Recommendations',
+      category: 'Step 9 of 10 • Decision Intelligence',
+      headline: 'Explainable Rule-Based Strategic Guidance',
       narrative:
-        'Enforcing the strict ₹25 Lakh six-month budget across six pillars with an interactive allocation tool and task checklist spanning Month 1 (Diagnosis) to Month 6 (Scale).',
-      judgeObservation:
-        'Test modifying the budget allocations to verify that exceeding ₹25 Lakh triggers the instant governance warning banner.',
+        'The AI recommendation engine analyzes 620 retailers and provides explainable turnaround advice: prioritizes 3-streak milestones, cuts 44% unused coupon burn, and recommends micro-hub dispatch.',
+      actionInstruction:
+        'Examine the strategic priority alerts, supporting metrics, and projected impact estimates.',
+    },
+    {
+      stepNumber: 10,
+      environment: 'admin',
+      adminTab: 'simulator',
+      title: 'Business Rescue Simulator (₹25L Cap)',
+      category: 'Step 10 of 10 • Interactive Scenario Sim',
+      headline: 'Simulate 6-Month Turnaround Under ₹25 Lakh Investment',
+      narrative:
+        'Judges can interactively adjust repeat purchase rate, cancellation reduction, and marketing reallocation to model the 6-month financial trajectory toward ₹32.8L+ revenue and sustainable profitability.',
+      actionInstruction:
+        'Adjust the sliders to compare Current Baseline vs Proposed Scenario, or click "Reset Demo Data" to restart the presentation.',
     },
   ];
 
   const currentStep = tourSteps[currentStepIndex];
 
-  const handleGoToStep = (index: number) => {
-    setCurrentStepIndex(index);
-    const step = tourSteps[index];
-    if (step.tab === 'report') {
-      onOpenReport();
-    } else {
-      onSelectTab(step.tab);
+  const handleApplyStep = (step: TourStep) => {
+    onSwitchRole(step.environment);
+    if (step.environment === 'admin' && step.adminTab) {
+      onSelectTab(step.adminTab);
     }
   };
 
   const handleNext = () => {
     if (currentStepIndex < tourSteps.length - 1) {
-      handleGoToStep(currentStepIndex + 1);
+      const nextIdx = currentStepIndex + 1;
+      setCurrentStepIndex(nextIdx);
+      handleApplyStep(tourSteps[nextIdx]);
     } else {
       onClose();
-      onOpenReport();
     }
   };
 
   const handlePrev = () => {
     if (currentStepIndex > 0) {
-      handleGoToStep(currentStepIndex - 1);
+      const prevIdx = currentStepIndex - 1;
+      setCurrentStepIndex(prevIdx);
+      handleApplyStep(tourSteps[prevIdx]);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 backdrop-blur-sm p-3 sm:p-4 animate-in fade-in">
-      <div className="bg-white rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl border border-slate-200 flex flex-col justify-between max-h-[92vh] overflow-y-auto">
-        <div>
-          {/* Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center space-x-2">
-              <span className="p-1.5 rounded-xl bg-indigo-100 text-indigo-700">
-                <Compass className="w-5 h-5" />
-              </span>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block">
-                  Judges & Evaluators Walkthrough
-                </span>
-                <h3 className="text-base font-black text-slate-900">
-                  Step {currentStep.stepNumber} of 9: {currentStep.title}
-                </h3>
-              </div>
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 animate-in fade-in zoom-in-95">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+              <Compass className="w-6 h-6" />
             </div>
+            <div>
+              <span className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-wider block">
+                {currentStep.category}
+              </span>
+              <h2 className="text-base sm:text-lg font-black text-white">
+                NOVA CART Presentation Mode
+              </h2>
+            </div>
+          </div>
 
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onResetDemoData}
+              className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white text-xs font-bold transition flex items-center space-x-1"
+              title="Reset Demo Data"
+            >
+              <RotateCcw className="w-3.5 h-3.5 mr-1" />
+              <span>Reset Data</span>
+            </button>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
+        </div>
 
-          {/* Stepper Dots */}
-          <div className="flex items-center justify-between py-3">
-            {tourSteps.map((step, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleGoToStep(idx)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  idx === currentStepIndex
-                    ? 'w-10 bg-indigo-600'
-                    : idx < currentStepIndex
-                    ? 'w-4 bg-emerald-500'
-                    : 'w-4 bg-slate-200'
-                }`}
-                title={`Step ${idx + 1}: ${step.title}`}
-              />
-            ))}
+        {/* Step Content */}
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold border border-emerald-500/30">
+              Step {currentStep.stepNumber} of 10
+            </span>
+            <span className="text-xs text-slate-400">
+              Environment:{' '}
+              <strong className="text-white capitalize">{currentStep.environment}</strong>
+            </span>
           </div>
 
-          {/* Step Body */}
-          <div className="space-y-3.5 my-2">
-            <div className="inline-block px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-[10px] font-bold uppercase">
-              {currentStep.category}
-            </div>
+          <h3 className="text-lg sm:text-xl font-black text-white">
+            {currentStep.headline}
+          </h3>
 
-            <h4 className="text-base font-bold text-slate-900 leading-snug">
-              {currentStep.headline}
-            </h4>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            {currentStep.narrative}
+          </p>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {currentStep.narrative}
+          <div className="p-4 rounded-2xl bg-slate-950 border border-indigo-500/30 space-y-1.5">
+            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block flex items-center">
+              <Sparkles className="w-3.5 h-3.5 mr-1" />
+              Competition Judge Observation & Action:
+            </span>
+            <p className="text-xs text-slate-200 font-medium">
+              {currentStep.actionInstruction}
             </p>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                Evaluator Action to Observe in Current View:
-              </span>
-              <p className="text-xs text-indigo-950 font-medium leading-relaxed">
-                👉 {currentStep.judgeObservation}
-              </p>
-            </div>
           </div>
         </div>
 
-        {/* Footer Navigation */}
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-between mt-4">
+        {/* Step Dots Progress */}
+        <div className="flex items-center justify-center space-x-1.5 pt-2">
+          {tourSteps.map((step, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setCurrentStepIndex(idx);
+                handleApplyStep(tourSteps[idx]);
+              }}
+              className={`h-2 rounded-full transition-all ${
+                idx === currentStepIndex
+                  ? 'w-7 bg-indigo-500'
+                  : 'w-2 bg-slate-800 hover:bg-slate-700'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Footer Navigation Buttons */}
+        <div className="flex items-center justify-between pt-4 border-t border-slate-800">
           <button
             onClick={handlePrev}
             disabled={currentStepIndex === 0}
-            className={`inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold transition ${
-              currentStepIndex === 0
-                ? 'opacity-40 cursor-not-allowed text-slate-400'
-                : 'text-slate-700 hover:bg-slate-100'
-            }`}
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold disabled:opacity-30 transition flex items-center space-x-1.5"
           >
-            <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-            Previous
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Previous</span>
           </button>
 
-          <span className="text-[11px] text-slate-400 font-mono font-medium">
-            Step {currentStep.stepNumber} / 9
-          </span>
-
-          <button
-            onClick={handleNext}
-            className="inline-flex items-center px-5 py-2.5 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 transition"
-          >
-            {currentStepIndex === tourSteps.length - 1 ? (
-              <>
-                Finish & Open Audit Report
-                <Sparkles className="w-3.5 h-3.5 ml-1.5" />
-              </>
-            ) : (
-              <>
-                Next Step
-                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-              </>
-            )}
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                handleApplyStep(currentStep);
+                onClose();
+              }}
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition"
+            >
+              Close & Interact
+            </button>
+            <button
+              onClick={handleNext}
+              className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 text-xs font-black shadow-lg shadow-emerald-500/20 transition flex items-center space-x-2"
+            >
+              <span>{currentStepIndex === tourSteps.length - 1 ? 'Finish Tour' : 'Next Step'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

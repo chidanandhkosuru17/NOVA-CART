@@ -1,6 +1,13 @@
-# NOVA CART – AI-Powered Smart Commerce & Business Intelligence Platform
+# NOVA CART – AI-Powered Local Commerce & Business Rescue Ecosystem
 
-**NOVA CART** is an executive-grade quick-commerce business turnaround and decision-support platform designed to rescue and optimize a multi-category local retail network operating across **620 local stores** in **Bengaluru, Mumbai, and Delhi NCR**.
+**NOVA CART** is an executive-grade, connected quick-commerce ecosystem and business turnaround platform operating across **620 local stores** in **Bengaluru, Mumbai, Delhi NCR, and Hyderabad**.
+
+### Connected Ecosystem Architecture:
+1. **🛍️ NOVA CART Customer Shopping Application**: Local store discovery in Hyderabad (Madhapur, Kukatpally, Gachibowli, Kondapur, Miyapur), categories, out-of-stock product substitution engine, transparent pricing with zero surprise charges, 6-stage order tracking, and 3-streak loyalty points.
+2. **🏪 NOVA CART Retailer Management Portal**: Merchant order fulfillment (Accept, Reject with reason, Prepare, Ready, Handover), live inventory synchronization, stock status monitoring, and "Busy Store Mode" toggle (+20m prep time).
+3. **🏛️ NOVA CART Admin Command Center**: 9 baseline KPIs diagnostics, 7 customer retention cohorts, smart inventory problem detection, real-time order rescue desk, explainable AI recommendations, marketing studio (₹17L burn, ₹25L cap), rapid refund support center, and ₹25L 6-month scenario simulator.
+4. **💾 Firebase Firestore Database & Authentication**: Shared persistent database (`ai-studio-0a20f08e-bdac-447f-9503-70bbdee36e89`) and Google Auth + instant Demo Persona switcher.
+5. **🎯 10-Step Interactive Startup Competition Tour**: Guided walkthrough of customer shopping, grocery checkout, retailer order acceptance, inventory mismatch guard, alternative store substitution, and admin turnaround simulation.
 
 ---
 

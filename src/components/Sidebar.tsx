@@ -27,7 +27,8 @@ export type TabKey =
   | 'recommendations'
   | 'store_radar'
   | 'market_trends'
-  | 'promo_studio';
+  | 'promo_studio'
+  | 'ai_copilot';
 
 interface SidebarProps {
   currentTab: TabKey;
@@ -119,6 +120,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       badge: 'Veo 3.1',
       badgeColor: 'bg-purple-500/20 text-purple-300 border border-purple-500/40',
       glow: 'from-purple-500 to-pink-500',
+    },
+    {
+      key: 'ai_copilot' as TabKey,
+      label: 'AI Business Copilot',
+      subtitle: 'Strategic Q&A Engine',
+      icon: Sparkles,
+      badge: 'Copilot',
+      badgeColor: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40',
+      glow: 'from-indigo-400 to-purple-500',
     },
   ];
 

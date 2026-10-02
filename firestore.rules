@@ -40,7 +40,35 @@ service cloud.firestore {
       return data.keys().hasAll(['uid', 'email', 'role']) &&
              data.uid is string && data.uid.size() <= 128 &&
              data.email is string && data.email.size() <= 200 &&
-             data.role in ['admin', 'executive', 'operations_manager', 'store_partner'];
+             data.role in ['customer', 'retailer', 'admin', 'executive'];
+    }
+
+    function isValidStore(data) {
+      return data.keys().hasAll(['name', 'category', 'location', 'status']) &&
+             data.name is string && data.name.size() <= 150 &&
+             data.category is string && data.category.size() <= 80 &&
+             data.location is string && data.location.size() <= 150 &&
+             data.status in ['Open', 'Closed', 'Busy'];
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['storeId', 'name', 'category', 'price', 'stock', 'stockStatus']) &&
+             data.storeId is string && data.storeId.size() <= 128 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.category is string && data.category.size() <= 80 &&
+             data.price is number && data.price >= 0 &&
+             data.stock is number && data.stock >= 0 &&
+             data.stockStatus in ['In Stock', 'Low Stock', 'Out of Stock'];
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll(['customerId', 'storeId', 'items', 'total', 'status', 'paymentMethod', 'deliveryAddress']) &&
+             data.customerId is string && data.customerId.size() <= 128 &&
+             data.storeId is string && data.storeId.size() <= 128 &&
+             data.items is list && data.items.size() <= 50 &&
+             data.total is number && data.total >= 0 &&
+             data.status in ['Order Placed', 'Retailer Accepted', 'Preparing Order', 'Ready for Pickup', 'Out for Delivery', 'Delivered', 'Cancelled', 'Delayed'] &&
+             data.deliveryAddress is string && data.deliveryAddress.size() <= 300;
     }
 
     function isValidSimulation(data) {
@@ -69,15 +97,28 @@ service cloud.firestore {
              data.status in ['Active', 'Paused', 'Draft', 'Completed'];
     }
 
-    function isValidBudgetAllocation(data) {
-      return data.keys().hasAll(['userId', 'inventoryTechLakh', 'retentionCrmLakh', 'deliveryOpsLakh', 'supportLakh', 'marketingLakh', 'analyticsLakh']) &&
-             data.userId is string && data.userId == request.auth.uid &&
-             data.inventoryTechLakh is number && data.inventoryTechLakh >= 0 &&
-             data.retentionCrmLakh is number && data.retentionCrmLakh >= 0 &&
-             data.deliveryOpsLakh is number && data.deliveryOpsLakh >= 0 &&
-             data.supportLakh is number && data.supportLakh >= 0 &&
-             data.marketingLakh is number && data.marketingLakh >= 0 &&
-             data.analyticsLakh is number && data.analyticsLakh >= 0;
+    // Stores Collection (Public read for neighborhood store discovery)
+    match /stores/{storeId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidStore(incoming());
+      allow update: if isSignedIn() && isValidStore(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // Products Collection (Public read for customer browsing)
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidProduct(incoming());
+      allow update: if isSignedIn() && isValidProduct(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    // Orders Collection (Shared connected order pipeline)
+    match /orders/{orderId} {
+      allow read: if true;
+      allow create: if isSignedIn() && isValidOrder(incoming());
+      allow update: if isSignedIn() && isValidOrder(incoming());
+      allow delete: if isAdmin();
     }
 
     // Users Collection
@@ -99,7 +140,7 @@ service cloud.firestore {
 
     // Support Tickets Collection
     match /tickets/{ticketId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create: if isSignedIn() && isValidTicket(incoming());
       allow update: if isSignedIn() && isValidTicket(incoming());
       allow delete: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid);
@@ -107,18 +148,10 @@ service cloud.firestore {
 
     // Campaigns Collection
     match /campaigns/{campaignId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create: if isSignedIn() && isValidCampaign(incoming());
       allow update: if isSignedIn() && isValidCampaign(incoming());
       allow delete: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid);
-    }
-
-    // Budget Plans Collection
-    match /budget_plans/{planId} {
-      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn() && isValidBudgetAllocation(incoming());
-      allow update: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin()) && isValidBudgetAllocation(incoming()) && incoming().userId == existing().userId;
-      allow delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
     }
   }
 }

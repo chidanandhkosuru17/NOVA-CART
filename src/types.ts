@@ -1,3 +1,91 @@
+export interface Store {
+  id: string;
+  name: string;
+  category: RetailerCategory;
+  city: City | 'Hyderabad';
+  locality: string;
+  rating: number;
+  deliveryTimeMinutes: number;
+  distanceKm: number;
+  image: string;
+  isOpen: boolean;
+  isBusy: boolean;
+  productsCount: number;
+  address: string;
+  inventoryHealthScore: number;
+}
+
+export interface StoreProduct {
+  id: string;
+  storeId: string;
+  storeName: string;
+  name: string;
+  category: string;
+  price: number;
+  originalPrice: number;
+  discountPct: number;
+  stock: number;
+  isAvailable: boolean;
+  rating: number;
+  image: string;
+  description: string;
+  unit: string;
+  estimatedDeliveryMins: number;
+  sku: string;
+  lastUpdated: string;
+  substitutionAlternative?: {
+    storeName: string;
+    productName: string;
+    price: number;
+    distanceKm: number;
+  };
+}
+
+export interface CartItem {
+  id: string;
+  product: StoreProduct;
+  quantity: number;
+}
+
+export type CustomerOrderStatus =
+  | 'Order Placed'
+  | 'Retailer Accepted'
+  | 'Preparing Order'
+  | 'Ready for Pickup'
+  | 'Out for Delivery'
+  | 'Delivered'
+  | 'Cancelled';
+
+export interface CustomerOrder {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  deliveryAddress: string;
+  locality: string;
+  storeId: string;
+  storeName: string;
+  items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
+  discount: number;
+  total: number;
+  status: CustomerOrderStatus;
+  createdAt: string;
+  estimatedArrival: string;
+  paymentMethod: 'UPI Demo' | 'Cash on Delivery' | 'Card Demo';
+  isDelayed?: boolean;
+  delayNotice?: string;
+  rejectionReason?: string;
+}
+
+export interface LoyaltyPointRecord {
+  id: string;
+  date: string;
+  description: string;
+  points: number;
+  type: 'earned' | 'redeemed';
+}
+
 export interface BaselineMetrics {
   totalUsers: number;
   monthlyActiveUsers: number;
