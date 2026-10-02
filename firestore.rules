@@ -1,0 +1,124 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'kosuruavinay@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Entity Validators
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'email', 'role']) &&
+             data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.role in ['admin', 'executive', 'operations_manager', 'store_partner'];
+    }
+
+    function isValidSimulation(data) {
+      return data.keys().hasAll(['userId', 'scenarioName', 'targetRepeatRate', 'targetCancellationRate']) &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.scenarioName is string && data.scenarioName.size() <= 200 &&
+             data.targetRepeatRate is number && data.targetRepeatRate >= 0 && data.targetRepeatRate <= 100 &&
+             data.targetCancellationRate is number && data.targetCancellationRate >= 0 && data.targetCancellationRate <= 100;
+    }
+
+    function isValidTicket(data) {
+      return data.keys().hasAll(['userId', 'customerName', 'category', 'priority', 'status']) &&
+             data.userId is string &&
+             data.customerName is string && data.customerName.size() <= 150 &&
+             data.category in ['Refund', 'Delivery delay', 'Missing product', 'Coupon issue', 'Incorrect order', 'Other'] &&
+             data.priority in ['Low', 'Medium', 'High', 'Critical'] &&
+             data.status in ['Open', 'In Progress', 'Resolved', 'Escalated'];
+    }
+
+    function isValidCampaign(data) {
+      return data.keys().hasAll(['userId', 'name', 'type', 'targetSegment', 'budget', 'status']) &&
+             data.userId is string &&
+             data.name is string && data.name.size() <= 150 &&
+             data.type in ['First-order offer', 'Repeat purchase reward', 'Lapsed customer reactivation', 'Category-based promotion', 'Nearby retailer promotion', 'Referral campaign'] &&
+             data.budget is number && data.budget >= 0 &&
+             data.status in ['Active', 'Paused', 'Draft', 'Completed'];
+    }
+
+    function isValidBudgetAllocation(data) {
+      return data.keys().hasAll(['userId', 'inventoryTechLakh', 'retentionCrmLakh', 'deliveryOpsLakh', 'supportLakh', 'marketingLakh', 'analyticsLakh']) &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.inventoryTechLakh is number && data.inventoryTechLakh >= 0 &&
+             data.retentionCrmLakh is number && data.retentionCrmLakh >= 0 &&
+             data.deliveryOpsLakh is number && data.deliveryOpsLakh >= 0 &&
+             data.supportLakh is number && data.supportLakh >= 0 &&
+             data.marketingLakh is number && data.marketingLakh >= 0 &&
+             data.analyticsLakh is number && data.analyticsLakh >= 0;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && isValidUserProfile(incoming());
+      allow update: if (isOwner(userId) || isAdmin()) && isValidUserProfile(incoming()) && incoming().uid == existing().uid;
+      allow delete: if isAdmin();
+    }
+
+    // Simulations Collection
+    match /simulations/{simId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidSimulation(incoming());
+      allow update: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin()) && isValidSimulation(incoming()) && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+    }
+
+    // Support Tickets Collection
+    match /tickets/{ticketId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidTicket(incoming());
+      allow update: if isSignedIn() && isValidTicket(incoming());
+      allow delete: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid);
+    }
+
+    // Campaigns Collection
+    match /campaigns/{campaignId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidCampaign(incoming());
+      allow update: if isSignedIn() && isValidCampaign(incoming());
+      allow delete: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid);
+    }
+
+    // Budget Plans Collection
+    match /budget_plans/{planId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isSignedIn() && isValidBudgetAllocation(incoming());
+      allow update: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin()) && isValidBudgetAllocation(incoming()) && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && (existing().userId == request.auth.uid || isAdmin());
+    }
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile information with role and preferences",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "executive", "operations_manager", "store_partner"],
+          "description": "User access role"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of user creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "SimulationRecord": {
+      "title": "SimulationRecord",
+      "description": "Saved Business Rescue simulation scenario with input parameters and calculated business impact",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID"
+        },
+        "scenarioName": {
+          "type": "string",
+          "description": "Name given to the rescue simulation run"
+        },
+        "targetRepeatRate": {
+          "type": "number",
+          "description": "Target repeat purchase rate percentage"
+        },
+        "targetCancellationRate": {
+          "type": "number",
+          "description": "Target order cancellation rate percentage"
+        },
+        "targetDeliveryTime": {
+          "type": "number",
+          "description": "Target average delivery time in minutes"
+        },
+        "targetInventoryAccuracy": {
+          "type": "number",
+          "description": "Target retailer inventory accuracy percentage"
+        },
+        "projectedMonthlyOrders": {
+          "type": "number",
+          "description": "Projected monthly order volume"
+        },
+        "projectedMonthlyRevenue": {
+          "type": "number",
+          "description": "Projected monthly gross revenue in INR"
+        },
+        "projectedAvoidedCancellations": {
+          "type": "number",
+          "description": "Projected monthly cancelled orders rescued"
+        },
+        "budgetSpentLakh": {
+          "type": "number",
+          "description": "Budget utilized in Lakh INR"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO creation timestamp"
+        }
+      },
+      "required": ["userId", "scenarioName", "targetRepeatRate", "targetCancellationRate"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Customer support and refund dispute ticket",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Creator user ID"
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Customer name"
+        },
+        "orderId": {
+          "type": "string",
+          "description": "Associated order ID"
+        },
+        "category": {
+          "type": "string",
+          "enum": ["Refund", "Delivery delay", "Missing product", "Coupon issue", "Incorrect order", "Other"],
+          "description": "Complaint category"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["Low", "Medium", "High", "Critical"],
+          "description": "Ticket urgency priority"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Open", "In Progress", "Resolved", "Escalated"],
+          "description": "Ticket lifecycle status"
+        },
+        "assignedAgent": {
+          "type": "string",
+          "description": "Support team agent name"
+        },
+        "resolutionNotes": {
+          "type": "string",
+          "description": "Notes on how ticket was resolved"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last updated timestamp"
+        }
+      },
+      "required": ["userId", "customerName", "category", "priority", "status"]
+    },
+    "Campaign": {
+      "title": "Campaign",
+      "description": "Smart promotional campaign for local commerce",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Creator user ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Campaign title"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["First-order offer", "Repeat purchase reward", "Lapsed customer reactivation", "Category-based promotion", "Nearby retailer promotion", "Referral campaign"],
+          "description": "Campaign strategy category"
+        },
+        "targetSegment": {
+          "type": "string",
+          "description": "Target customer segment"
+        },
+        "budget": {
+          "type": "number",
+          "description": "Allocated budget in INR"
+        },
+        "discountPct": {
+          "type": "number",
+          "description": "Discount or incentive percentage"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Active", "Paused", "Draft", "Completed"],
+          "description": "Campaign status"
+        },
+        "ordersGenerated": {
+          "type": "number",
+          "description": "Attributed order count"
+        },
+        "revenueGenerated": {
+          "type": "number",
+          "description": "Attributed revenue generated in INR"
+        },
+        "redemptionRate": {
+          "type": "number",
+          "description": "Coupon redemption rate percentage"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["userId", "name", "type", "targetSegment", "budget", "status"]
+    },
+    "BudgetAllocation": {
+      "title": "BudgetAllocation",
+      "description": "Custom 6-month ₹25 lakh rescue budget planning configuration",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID"
+        },
+        "inventoryTechLakh": {
+          "type": "number",
+          "description": "Budget in Lakh INR for inventory and retailer workflow improvements"
+        },
+        "retentionCrmLakh": {
+          "type": "number",
+          "description": "Budget in Lakh INR for customer retention and CRM"
+        },
+        "deliveryOpsLakh": {
+          "type": "number",
+          "description": "Budget in Lakh INR for delivery and order operations"
+        },
+        "supportLakh": {
+          "type": "number",
+          "description": "Budget in Lakh INR for customer support improvements"
+        },
+        "marketingLakh": {
+          "type": "number",
+          "description": "Budget in Lakh INR for marketing optimization and experiments"
+        },
+        "analyticsLakh": {
+          "type": "number",
+          "description": "Budget in Lakh INR for analytics, testing, and contingency"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["userId", "inventoryTechLakh", "retentionCrmLakh", "deliveryOpsLakh", "supportLakh", "marketingLakh", "analyticsLakh"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with roles and metadata"
+    },
+    "/simulations/{simId}": {
+      "schema": "SimulationRecord",
+      "description": "Saved rescue simulation models run by users"
+    },
+    "/tickets/{ticketId}": {
+      "schema": "SupportTicket",
+      "description": "Customer support dispute and resolution tickets"
+    },
+    "/campaigns/{campaignId}": {
+      "schema": "Campaign",
+      "description": "Marketing promotions and customer retention campaigns"
+    },
+    "/budget_plans/{planId}": {
+      "schema": "BudgetAllocation",
+      "description": "User tailored 6-month budget allocations under the 25 Lakh cap"
+    }
+  }
+}
